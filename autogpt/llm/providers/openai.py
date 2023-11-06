@@ -21,6 +21,9 @@ from autogpt.llm.base import (
 )
 from autogpt.logs import logger
 from autogpt.models.command_registry import CommandRegistry
+from autogpt.qunar.qunar_gpt import QunarGPT
+
+MAX_TOKENS = 40960
 
 OPEN_AI_CHAT_MODELS = {
     info.name: info
@@ -232,7 +235,12 @@ def create_chat_completion(
         OpenAIObject: The ChatCompletion response from OpenAI
 
     """
-    completion: OpenAIObject = openai.ChatCompletion.create(
+    # completion: OpenAIObject = openai.ChatCompletion.create(
+    #     messages=messages,
+    #     **kwargs,
+    # )
+
+    completion: OpenAIObject = QunarGPT.create(
         messages=messages,
         **kwargs,
     )

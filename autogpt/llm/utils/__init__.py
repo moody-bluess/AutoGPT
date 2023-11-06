@@ -170,6 +170,7 @@ def create_chat_completion(
         raise RuntimeError(response.error)
 
     first_message: ResponseMessageDict = response.choices[0].message
+    # first_message: ResponseMessageDict = response.choices[0]
     content: str | None = first_message.get("content")
     function_call: FunctionCallDict | None = first_message.get("function_call")
 

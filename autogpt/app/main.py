@@ -237,7 +237,7 @@ def run_interaction_loop(
             if restart_spinner:
                 spinner.start()
 
-    # Set up an interrupt signal for the agent.
+    # Set up an interrupt signal for the agent.注册ctrlC信号处理程序（SIGINT）
     signal.signal(signal.SIGINT, graceful_agent_interrupt)
 
     #########################

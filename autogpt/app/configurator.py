@@ -171,17 +171,17 @@ def check_model(
     config: Config,
 ) -> str:
     """Check if model is available for use. If not, return gpt-3.5-turbo."""
-    openai_credentials = config.get_openai_credentials(model_name)
-    api_manager = ApiManager()
-    models = api_manager.get_models(**openai_credentials)
-
-    if any(model_name in m["id"] for m in models):
-        return model_name
-
-    logger.typewriter_log(
-        "WARNING: ",
-        Fore.YELLOW,
-        f"You do not have access to {model_name}. Setting {model_type} to "
-        f"gpt-3.5-turbo.",
-    )
-    return "gpt-3.5-turbo"
+    # openai_credentials = config.get_openai_credentials(model_name)
+    # api_manager = ApiManager()
+    # models = api_manager.get_models(**openai_credentials)
+    #
+    # if any(model_name in m["id"] for m in models):
+    #     return model_name
+    #
+    # logger.typewriter_log(
+    #     "WARNING: ",
+    #     Fore.YELLOW,
+    #     f"You do not have access to {model_name}. Setting {model_type} to "
+    #     f"gpt-3.5-turbo.",
+    # )
+    return "gpt-3.5-turbo-16k-0613"
