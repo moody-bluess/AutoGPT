@@ -33,7 +33,10 @@ requestssession: Optional[
 verify_ssl_certs = True
 proxy = None
 
-GPT_MODEL = 'gpt-4'
+QUNAR_GPT_MODEL = os.environ.get("QUNAR_GPT_MODEL", 'gpt-4')
+QUNAR_KEY = os.environ.get("QUNAR_KEY")
+QUNAR_PWD = os.environ.get("QUNAR_PWD")
+QUNAR_USER = os.environ.get("QUNAR_USER", 'lianchen.zhang')
 
 
 class QunarRequestor:
@@ -220,12 +223,12 @@ class QunarRequestor:
         headers = {}
 
         request_body = {
-            "key": "qunar_hackathon_41",
-            "password": "1MVb45",
+            "key": QUNAR_KEY,
+            "password": QUNAR_PWD,
             "apiVersion": "2023-05-15",
             "appCode": "-----",
             "traceId": "123",
-            "userIdentityInfo": "lianchen.zhang",
+            "userIdentityInfo": QUNAR_USER,
             "version": "hard",
             "project": "售后客服对话总结"
         }
@@ -240,7 +243,7 @@ class QunarRequestor:
         prompt["temperature"] = params["temperature"]
         request_body["prompt"] = prompt
         # request_body["apiType"] = params["model"]
-        request_body["apiType"] = GPT_MODEL
+        request_body["apiType"] = QUNAR_GPT_MODEL
         max_tokens = params['max_tokens']
 
         data = None

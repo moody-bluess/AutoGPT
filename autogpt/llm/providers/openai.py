@@ -235,6 +235,8 @@ def create_chat_completion(
         OpenAIObject: The ChatCompletion response from OpenAI
 
     """
+    # 这里切换openai和qunar
+
     # completion: OpenAIObject = openai.ChatCompletion.create(
     #     messages=messages,
     #     **kwargs,

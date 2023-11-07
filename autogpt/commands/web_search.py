@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import os
+import socket
+
+import httplib2
+
 COMMAND_CATEGORY = "web_search"
 COMMAND_CATEGORY_TITLE = "Web Search"
 
@@ -15,6 +20,15 @@ from autogpt.agents.agent import Agent
 from autogpt.command_decorator import command
 
 DUCKDUCKGO_MAX_ATTEMPTS = 3
+
+QUNAR_PROXY_HOST = os.environ.get("QUNAR_PROXY_HOST")
+QUNAR_PROXY_PORT = os.environ.get("QUNAR_PROXY_PORT")
+QUNAR_PROXY_USR = os.environ.get("QUNAR_PROXY_USR")
+QUNAR_PROXY_PWD = os.environ.get("QUNAR_PROXY_PWD")
+proxies = {
+    'http': f'http://{QUNAR_PROXY_HOST}:{QUNAR_PROXY_PORT}',
+    'https': f'http://{QUNAR_PROXY_HOST}:{QUNAR_PROXY_PORT}'
+}
 
 
 @command(
@@ -46,7 +60,7 @@ def web_search(query: str, agent: Agent, num_results: int = 8) -> str:
         if not query:
             return json.dumps(search_results)
 
-        results = DDGS().text(query)
+        results = DDGS(proxies=proxies).text(query)
         search_results = list(islice(results, num_results))
 
         if search_results:
@@ -70,7 +84,7 @@ def web_search(query: str, agent: Agent, num_results: int = 8) -> str:
         }
     },
     lambda config: bool(config.google_api_key)
-    and bool(config.google_custom_search_engine_id),
+                   and bool(config.google_custom_search_engine_id),
     "Configure google_api_key and custom_search_engine_id.",
     aliases=["search"],
 )
@@ -94,13 +108,13 @@ def google(query: str, agent: Agent, num_results: int = 8) -> str | list[str]:
         custom_search_engine_id = agent.config.google_custom_search_engine_id
 
         # Initialize the Custom Search API service
-        service = build("customsearch", "v1", developerKey=api_key)
+        service = build("customsearch", "v1", developerKey=api_key, http=build_http_proxy())
 
         # Send the search query and retrieve the results
         result = (
             service.cse()
-            .list(q=query, cx=custom_search_engine_id, num=num_results)
-            .execute()
+                .list(q=query, cx=custom_search_engine_id, num=num_results)
+                .execute()
         )
 
         # Extract the search result items from the response
@@ -115,7 +129,7 @@ def google(query: str, agent: Agent, num_results: int = 8) -> str | list[str]:
 
         # Check if the error is related to an invalid or missing API key
         if error_details.get("error", {}).get(
-            "code"
+                "code"
         ) == 403 and "invalid API key" in error_details.get("error", {}).get(
             "message", ""
         ):
@@ -145,3 +159,64 @@ def safe_google_results(results: str | list) -> str:
     else:
         safe_message = results.encode("utf-8", "ignore").decode("utf-8")
     return safe_message
+
+
+def build_http_proxy():
+    """Builds httplib2.Http object
+
+    Returns:
+    A httplib2.Http object, which is used to make http requests, and which has timeout set by default.
+    To override default timeout call
+
+      socket.setdefaulttimeout(timeout_in_sec)
+
+    before interacting with this method.
+    """
+    if socket.getdefaulttimeout() is not None:
+        http_timeout = socket.getdefaulttimeout()
+    else:
+        http_timeout = 60
+    http = httplib2.Http(timeout=http_timeout, proxy_info=proxy_info_from_url())
+    # 308's are used by several Google APIs (Drive, YouTube)
+    # for Resumable Uploads rather than Permanent Redirects.
+    # This asks httplib2 to exclude 308s from the status codes
+    # it treats as redirects
+    try:
+        http.redirect_codes = http.redirect_codes - {308}
+    except AttributeError:
+        # Apache Beam tests depend on this library and cannot
+        # currently upgrade their httplib2 version
+        # http.redirect_codes does not exist in previous versions
+        # of httplib2, so pass
+        pass
+
+    return http
+
+
+def proxy_info_from_url(method="http", noproxy=None):
+    """Construct a ProxyInfo from a URL (such as http_proxy env var)
+    """
+
+    proxy_type = 3  # socks.PROXY_TYPE_HTTP
+    pi = httplib2.ProxyInfo(
+        proxy_type=proxy_type,
+        proxy_host=QUNAR_PROXY_HOST,
+        proxy_port=QUNAR_PROXY_PORT or dict(https=443, http=80)[method],
+        proxy_user=QUNAR_PROXY_USR or None,
+        proxy_pass=QUNAR_PROXY_PWD or None,
+        proxy_headers=None,
+    )
+
+    bypass_hosts = []
+    # If not given an explicit noproxy value, respect values in env vars.
+    if noproxy is None:
+        noproxy = os.environ.get("no_proxy", os.environ.get("NO_PROXY", ""))
+    # Special case: A single '*' character means all hosts should be bypassed.
+    if noproxy == "*":
+        bypass_hosts = httplib2.AllHosts
+    elif noproxy.strip():
+        bypass_hosts = noproxy.split(",")
+        bypass_hosts = tuple(filter(bool, bypass_hosts))  # To exclude empty string.
+
+    pi.bypass_hosts = bypass_hosts
+    return pi

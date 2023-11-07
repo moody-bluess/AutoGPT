@@ -102,14 +102,14 @@ def run_auto_gpt(
                     + Style.RESET_ALL
                 )
 
-        git_branch = get_current_git_branch()
-        if git_branch and git_branch != "stable":
-            logger.typewriter_log(
-                "WARNING: ",
-                Fore.RED,
-                f"You are running on `{git_branch}` branch "
-                "- this is not a supported branch.",
-            )
+        # git_branch = get_current_git_branch()
+        # if git_branch and git_branch != "stable":
+        #     logger.typewriter_log(
+        #         "WARNING: ",
+        #         Fore.RED,
+        #         f"You are running on `{git_branch}` branch "
+        #         "- this is not a supported branch.",
+        #     )
         if sys.version_info < (3, 10):
             logger.typewriter_log(
                 "WARNING: ",
