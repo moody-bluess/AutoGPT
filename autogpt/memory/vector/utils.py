@@ -34,6 +34,7 @@ def get_embedding(
     Returns:
         List[float]: The embedding.
     """
+    return []
     multiple = isinstance(input, list) and all(not isinstance(i, int) for i in input)
 
     if isinstance(input, str):
@@ -58,6 +59,7 @@ def get_embedding(
         + (f" via Azure deployment '{kwargs['engine']}'" if config.use_azure else "")
     )
 
+#
     embeddings = iopenai.create_embedding(
         input,
         **kwargs,

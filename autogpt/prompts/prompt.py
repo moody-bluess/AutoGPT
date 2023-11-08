@@ -3,6 +3,7 @@ from autogpt.config.prompt_config import PromptConfig
 from autogpt.prompts.generator import PromptGenerator
 
 DEFAULT_TRIGGERING_PROMPT = (
+    # "Your answers must be in Chinese. "
     "Determine exactly one command to use based on the given goals "
     "and the progress you have made so far, "
     "and respond using the JSON schema specified previously:"

@@ -5,15 +5,12 @@ import time
 import warnings
 from json import JSONDecodeError
 from typing import (
-    AsyncGenerator,
-    AsyncIterator,
     Callable,
     Dict,
     Iterator,
     Optional,
     Tuple,
     Union,
-    overload,
 )
 
 import openai

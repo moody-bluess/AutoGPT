@@ -233,6 +233,18 @@ def generate_aiconfig_automatic(user_prompt: str, config: Config) -> AIConfig:
         .group(1)
         .strip()
     )
+
+    # 中文格式解析
+    # ai_name = re.search(r"名称(?:\s*)：(?:\s*)(.*)", output, re.IGNORECASE).group(1)
+    # ai_role = (
+    #     re.search(
+    #         r"描述(?:\s*)：(?:\s*)(.*?)(?:(?:\n)|目标)",
+    #         output,
+    #         re.IGNORECASE | re.DOTALL,
+    #     )
+    #     .group(1)
+    #     .strip()
+    # )
     ai_goals = re.findall(r"(?<=\n)-\s*(.*)", output)
     api_budget = 0.0  # TODO: parse api budget using a regular expression
 

@@ -7,6 +7,8 @@ import socket
 
 import httplib2
 
+from autogpt.core.configuration import *
+
 COMMAND_CATEGORY = "web_search"
 COMMAND_CATEGORY_TITLE = "Web Search"
 
@@ -21,14 +23,7 @@ from autogpt.command_decorator import command
 
 DUCKDUCKGO_MAX_ATTEMPTS = 3
 
-QUNAR_PROXY_HOST = os.environ.get("QUNAR_PROXY_HOST")
-QUNAR_PROXY_PORT = os.environ.get("QUNAR_PROXY_PORT")
-QUNAR_PROXY_USR = os.environ.get("QUNAR_PROXY_USR")
-QUNAR_PROXY_PWD = os.environ.get("QUNAR_PROXY_PWD")
-proxies = {
-    'http': f'http://{QUNAR_PROXY_HOST}:{QUNAR_PROXY_PORT}',
-    'https': f'http://{QUNAR_PROXY_HOST}:{QUNAR_PROXY_PORT}'
-}
+
 
 
 @command(
@@ -201,7 +196,7 @@ def proxy_info_from_url(method="http", noproxy=None):
     pi = httplib2.ProxyInfo(
         proxy_type=proxy_type,
         proxy_host=QUNAR_PROXY_HOST,
-        proxy_port=QUNAR_PROXY_PORT or dict(https=443, http=80)[method],
+        proxy_port=int(QUNAR_PROXY_PORT) or dict(https=443, http=80)[method],
         proxy_user=QUNAR_PROXY_USR or None,
         proxy_pass=QUNAR_PROXY_PWD or None,
         proxy_headers=None,

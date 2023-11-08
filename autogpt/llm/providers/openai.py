@@ -21,7 +21,7 @@ from autogpt.llm.base import (
 )
 from autogpt.logs import logger
 from autogpt.models.command_registry import CommandRegistry
-from autogpt.qunar.qunar_gpt import QunarGPT
+from autogpt.qunar.api_resources.q_chat_completion import QChatCompletion
 
 MAX_TOKENS = 40960
 
@@ -242,7 +242,7 @@ def create_chat_completion(
     #     **kwargs,
     # )
 
-    completion: OpenAIObject = QunarGPT.create(
+    completion: OpenAIObject = QChatCompletion.create(
         messages=messages,
         **kwargs,
     )

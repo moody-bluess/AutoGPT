@@ -1,17 +1,12 @@
-import os
-
-import openai
-from openai import api_requestor, error, util
-from openai.api_resources.abstract.api_resource import APIResource
+from openai import error, util
 from openai.openai_response import OpenAIResponse
-from openai.util import ApiType
 
 from autogpt.qunar.qunar_requestor import QunarRequestor
 
 MAX_TIMEOUT = 20
 
 
-class QunarGPT:
+class EngineAPIResource:
     plain_old_data = False
 
     @classmethod

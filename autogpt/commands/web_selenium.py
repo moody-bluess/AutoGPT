@@ -40,7 +40,7 @@ from autogpt.logs import logger
 from autogpt.memory.vector import MemoryItem, get_memory
 from autogpt.processing.html import extract_hyperlinks, format_hyperlinks
 from autogpt.url_utils.validators import validate_url
-
+from autogpt.core.configuration import *
 FILE_DIR = Path(__file__).parent.parent
 TOKENS_TO_TRIGGER_SUMMARY = 50
 LINKS_TO_RETURN = 20
@@ -115,7 +115,8 @@ def scrape_text_with_selenium(url: str, agent: Agent) -> tuple[WebDriver, str]:
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.49 Safari/537.36"
     )
-
+    # options.add_argument(f'--proxy-server={QUNAR_PROXY_HOST}:{QUNAR_PROXY_PORT}')
+    options.add_argument(f'--proxy-server={proxies["http"]}')
     if agent.config.selenium_web_browser == "firefox":
         if agent.config.selenium_headless:
             options.headless = True
