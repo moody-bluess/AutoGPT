@@ -19,6 +19,8 @@ from openai import error, util, api_requestor
 from openai.openai_response import OpenAIResponse
 from openai.util import ApiType
 
+from autogpt.core.configuration import QUNAR_APPCODE
+
 TIMEOUT_SECS = 600
 MAX_SESSION_LIFETIME_SECS = 180
 MAX_CONNECTION_RETRIES = 2
@@ -223,11 +225,11 @@ class QunarRequestor:
             "key": QUNAR_KEY,
             "password": QUNAR_PWD,
             "apiVersion": "2023-05-15",
-            "appCode": "-----",
+            "appCode": QUNAR_APPCODE,
             "traceId": "123",
             "userIdentityInfo": QUNAR_USER,
             "version": "hard",
-            "project": "售后客服对话总结"
+            "project": QUNAR_APPCODE + 'project'
         }
 
         prompt = {
@@ -237,7 +239,7 @@ class QunarRequestor:
             "presence_penalty": 0,
         }
         prompt["messages"] = params["messages"]
-        prompt["temperature"] = params["temperature"]
+        prompt["temperature"] = 0.7
         request_body["prompt"] = prompt
         # request_body["apiType"] = params["model"]
         request_body["apiType"] = QUNAR_GPT_MODEL

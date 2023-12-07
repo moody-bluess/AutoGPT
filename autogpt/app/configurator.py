@@ -184,4 +184,4 @@ def check_model(
     #     f"You do not have access to {model_name}. Setting {model_type} to "
     #     f"gpt-3.5-turbo.",
     # )
-    return "gpt-3.5-turbo-16k-0613"
+    return "gpt-3.5-turbo-16k"
